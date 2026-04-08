@@ -1,4 +1,31 @@
-FROM python:3.14-slim
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt ./
+RUN apt-get update && apt-get install -y cron && rm -rf /var/lib/apt/lists/* \
+    && pip install --no-cache-dir -r requirements.txt
+
+COPY HDHomeRunEPG_To_XmlTv.py ./
+COPY run_tvguide.sh ./
+
+# Ensure script is executable
+RUN chmod +x /app/run_tvguide.sh
+
+# Ensure output directory exists
+RUN mkdir -p /app/output
+
+ENV HOST=localhost
+ENV FILENAME=output.xml
+
+# Add cron job (with user + logging)
+RUN echo "0 1 * * * root /app/run_tvguide.sh >> /proc/1/fd/1 2>&1" > /etc/cron.d/tvguide-cron
+
+# Fix permissions and register cron
+RUN chmod 0644 /etc/cron.d/tvguide-cron && crontab /etc/cron.d/tvguide-cron
+
+# Run cron in foreground
+CMD ["cron", "-f"]FROM python:3.14-slim
 
 WORKDIR /app
 
