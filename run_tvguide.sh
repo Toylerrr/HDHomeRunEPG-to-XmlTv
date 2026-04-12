@@ -4,7 +4,7 @@ mkdir -p /app/output
 
 echo "Running with HOST=$HOST FILENAME=$FILENAME DAYS=2" >> /app/output/cron.log
 
-python /app/HDHomeRunEPG_To_XmlTv.py \
+python3 /app/HDHomeRunEPG_To_XmlTv.py \
   --host "$HOST" \
   --filename "$FILENAME" \
   --days 2 >> /app/output/cron.log 2>&1
