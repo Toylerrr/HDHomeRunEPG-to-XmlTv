@@ -19,7 +19,9 @@ ENV HOST=localhost
 ENV FILENAME=output.xml
 
 # Add cron job (with user + logging)
-RUN echo "0 1 * * * root /app/run_tvguide.sh >> /proc/1/fd/1 2>&1" > /etc/cron.d/tvguide-cron
+RUN echo "HOST=$HOST" >> /etc/environment && \
+    echo "FILENAME=$FILENAME" >> /etc/environment && \
+    echo "0 1 * * * root . /etc/environment; /app/run_tvguide.sh >> /proc/1/fd/1 2>&1" > /etc/cron.d/tvguide-cron
 
 # Fix permissions and register cron
 RUN chmod 0644 /etc/cron.d/tvguide-cron && crontab /etc/cron.d/tvguide-cron
